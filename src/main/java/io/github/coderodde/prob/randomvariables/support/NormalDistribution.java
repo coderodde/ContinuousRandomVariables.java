@@ -2,21 +2,22 @@ package io.github.coderodde.prob.randomvariables.support;
 
 import io.github.coderodde.prob.randomvariables.ContinuousRandomVariable;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Objects;
-import org.apache.commons.math3.special.Erf;
 
 /**
  * This class models the normal distribution.
  */
 public class NormalDistribution extends ContinuousRandomVariable {
 
-    private static final double INVERSE_SQRT2 = 1.0 / Math.sqrt(2.0);
+    private static BigDecimal INVERSE_SQRT2 = null;
     
     private final BigDecimal mu;
     private final BigDecimal sd;
     
     public NormalDistribution(BigDecimal mu,
                               BigDecimal variance) {
+        super();
         
         this.mu = Objects.requireNonNull(mu, "The expected value is null.");
         this.sd = checkVariance(variance);
@@ -47,11 +48,19 @@ public class NormalDistribution extends ContinuousRandomVariable {
         return variance.sqrt(mathContext);
     }
     
-    private static BigDecimal phi(BigDecimal z) {
+    private BigDecimal phi(BigDecimal z) {
+        if (INVERSE_SQRT2 == null) {
+            INVERSE_SQRT2 = inverseSqrt2(mathContext);
+        }
+        
         return BigDecimal
                 .valueOf(0.5)
-                .multiply(BigDecimal.ONE.add(
-                        BigDecimal.valueOf(
-                                Erf.erf(z.doubleValue() * INVERSE_SQRT2))));
+                .multiply(BigDecimal.ONE.add(Erf.erf(z.multiply(INVERSE_SQRT2), 
+                          getMathContext())));
+    }
+    
+    private static BigDecimal inverseSqrt2(MathContext mc) {
+        return BigDecimal.ONE
+                .divide(BigDecimal.valueOf(2).sqrt(mc), mc);
     }
 }
