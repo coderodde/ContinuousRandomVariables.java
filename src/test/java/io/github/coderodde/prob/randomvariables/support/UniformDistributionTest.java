@@ -17,12 +17,12 @@ public class UniformDistributionTest {
     @Test
     public void getCumulativeMassLess() {
         assertEquals(BigDecimal.valueOf(0.4),
-                     dist.getCumulativeMassLess(6.0).setScale(1));
+                     dist.cdfLessThan(6.0).setScale(1));
     }
     
     @Test
     public void getCumulativeMassGreater() {
         assertEquals(BigDecimal.valueOf(0.6), 
-                     dist.getCumulativeMassGreater(6.0).setScale(1));
+                     dist.cdfGreaterThan(6.0).setScale(1));
     }
 }
